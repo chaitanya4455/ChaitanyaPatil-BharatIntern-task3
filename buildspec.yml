@@ -1,12 +1,32 @@
-version: 0.0
-os: linux
+version: 0.2
 
-hooks:
-  ApplicationStop:
-    - location: scripts/stop_container.sh
-      timeout: 300
-      runas: root
-  AfterInstall:
-    - location: scripts/start_container.sh
-      timeout: 300
-      runas: root
+phases:
+  install:
+    runtime-versions:
+      python: 3.8  # Specify your Python version
+    commands:
+      - echo Installing dependencies...
+      - pip install -r requirements.txt
+
+  pre_build:
+    commands:
+      - echo Running pre-build tests...
+      - pytest tests/  # Assuming you have tests in a `tests/` directory
+
+  build:
+    commands:
+      - echo Building the application...
+      # Add any build-related commands here, if necessary
+      # For example, creating distribution packages with setuptools:
+      # - python setup.py sdist bdist_wheel
+
+  post_build:
+    commands:
+      - echo Build completed successfully.
+
+artifacts:
+  files:
+    - '**/*'  # Adjust this to match the files you want to include in the build artifacts
+  discard-paths: yes
+  base-directory: build  # If you have a specific build directory
+
